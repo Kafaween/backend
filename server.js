@@ -6,39 +6,25 @@ const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT;
 app.use(cors());
+const weathersatus = require('./models/weatherclass');
 
 app.get('/', (request, response) => {
   response.send('root');
 });
 
 app.get('/weather', (request, response) => {
-  console.log(request.query);
   let a = request.query.loc;
-  console.log(a);
+
   let b = a.split(',');
 
   let loc = b[0];
-  console.log(loc);
-  var data = weather.map((e) => {
-    console.log(e.data);
-    if (e.city_name == loc) {
-      console.log(e.data[0].valid_date);
-      console.log(e.data[0].weather.description);
-      return [
-        {
-          date1: e.data[0].valid_date,
-          date2: e.data[1].valid_date,
-          date3: e.data[2].valid_date,
 
-          weatherstate1: e.data[0].weather.description,
-          weatherstate2: e.data[1].weather.description,
-          weatherstate3: e.data[2].weather.description,
-        },
-      ];
-    }
+  var data = weather.find((element) => {
+    return element.city_name.toLowerCase() === loc.toLowerCase();
   });
-  console.log(data);
-  response.send(data);
+  let status = data.data.map((e) => new weathersatus(e));
+  console.log(status);
+  response.send(status);
 });
 
 app.listen(PORT, () => {
